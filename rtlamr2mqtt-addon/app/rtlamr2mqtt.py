@@ -25,6 +25,7 @@ import helpers.ha_messages as ha_msgs
 import helpers.read_output as ro
 import helpers.usb_utils as usbutil
 import helpers.info as i
+import helpers.monitor_mode as mm
 
 
 # Set up logging
@@ -51,7 +52,7 @@ def shutdown(rtlamr=None, rtltcp=None, mqtt_client=None, base_topic='rtlamr', of
             rtlamr.kill()
             rtlamr.communicate()
         if LOG_LEVEL >= 3:
-            logger.info('RTLAMR Terminitaed.')
+            logger.info('RTLAMR Terminated.')
     # Terminate RTL_TCP
     if rtltcp not in [None, 'remote']:
         if LOG_LEVEL >= 3:
@@ -64,7 +65,7 @@ def shutdown(rtlamr=None, rtltcp=None, mqtt_client=None, base_topic='rtlamr', of
             rtltcp.kill()
             rtltcp.communicate()
         if LOG_LEVEL >= 3:
-            logger.info('RTL_TCP Terminitaed.')
+            logger.info('RTL_TCP Terminated.')
     if mqtt_client is not None and offline:
         mqtt_client.publish(
             topic=f'{base_topic}/status',
@@ -253,6 +254,18 @@ def main():
 
     # Get a list of meters ids to watch
     meter_ids_list = list(config['meters'].keys())
+    
+    # Initialize monitor mode tracker if enabled
+    monitor_tracker = None
+    if config['general']['monitor_mode']:
+        if LOG_LEVEL >= 3:
+            logger.info('Monitor mode enabled - will log all detected meters')
+        monitor_tracker = mm.MonitorModeTracker(
+            config_path=config.get('config_file_path'),
+            max_meters=25,
+            logger=logger
+        )
+        meter_ids_list = None  # Don't filter in monitor mode
 
     # Create MQTT Client and connect to the broker
     mqtt_client = m.MQTTClient(
@@ -416,43 +429,59 @@ def main():
             )
 
             if reading is not None:
-                # Add the meter_id to the read_counter
-                if reading['meter_id'] not in read_counter:
-                    read_counter.append(reading['meter_id'])
-
-                if config['meters'][reading['meter_id']]['format'] is not None:
-                    r = ro.format_number(reading['consumption'], config['meters'][reading['meter_id']]['format'])
+                # Monitor mode: just log the reading
+                if config['general']['monitor_mode']:
+                    protocol = reading['message'].get('Type', 'unknown')
+                    power_level = reading['message'].get('PowerLevel', 'N/A')
+                    logger.info('[MONITOR] Meter ID: %s | Reading: %s | Protocol: %s | Power: %s',
+                                reading['meter_id'], reading['consumption'], protocol, power_level)
+                    
+                    # Track this meter for later addition to config
+                    if monitor_tracker:
+                        monitor_tracker.add_meter(
+                            reading['meter_id'],
+                            protocol,
+                            reading['consumption']
+                        )
                 else:
-                    r = reading['consumption']
+                    # Normal mode: publish to MQTT
+                    # Add the meter_id to the read_counter
+                    if reading['meter_id'] not in read_counter:
+                        read_counter.append(reading['meter_id'])
 
-                # Publish the reading to MQTT
-                # First, make sure the status is set to online
-                mqtt_client.publish(
-                    topic=f'{config["mqtt"]["base_topic"]}/status',
-                    payload='online',
-                    qos=1,
-                    retain=False
-                )
-                # Then, send the reading
-                payload = { 'reading': r, 'lastseen': get_iso8601_timestamp() }
-                mqtt_client.publish(
-                    topic=f'{config["mqtt"]["base_topic"]}/{reading["meter_id"]}/state',
-                    payload=dumps(payload),
-                    qos=1,
-                    retain=False
-                )
+                    if config['meters'][reading['meter_id']]['format'] is not None:
+                        r = ro.format_number(reading['consumption'], config['meters'][reading['meter_id']]['format'])
+                    else:
+                        r = reading['consumption']
 
-                # Publish the meter attributes to MQTT
-                # Add the meter protocol to the list of attributes
-                reading['message']['protocol'] = config['meters'][reading['meter_id']]['protocol']
-                mqtt_client.publish(
-                    topic=f'{config["mqtt"]["base_topic"]}/{reading["meter_id"]}/attributes',
-                    payload=dumps(reading['message']),
-                    qos=1,
-                    retain=False
-                )
+                    # Publish the reading to MQTT
+                    # First, make sure the status is set to online
+                    mqtt_client.publish(
+                        topic=f'{config["mqtt"]["base_topic"]}/status',
+                        payload='online',
+                        qos=1,
+                        retain=False
+                    )
+                    # Then, send the reading
+                    payload = { 'reading': r, 'lastseen': get_iso8601_timestamp() }
+                    mqtt_client.publish(
+                        topic=f'{config["mqtt"]["base_topic"]}/{reading["meter_id"]}/state',
+                        payload=dumps(payload),
+                        qos=1,
+                        retain=False
+                    )
 
-            if config['general']['sleep_for'] > 0 and len(read_counter) == len(meter_ids_list):
+                    # Publish the meter attributes to MQTT
+                    # Add the meter protocol to the list of attributes
+                    reading['message']['protocol'] = config['meters'][reading['meter_id']]['protocol']
+                    mqtt_client.publish(
+                        topic=f'{config["mqtt"]["base_topic"]}/{reading["meter_id"]}/attributes',
+                        payload=dumps(reading['message']),
+                        qos=1,
+                        retain=False
+                    )
+
+            if config['general']['sleep_for'] > 0 and not config['general']['monitor_mode'] and len(read_counter) == len(meter_ids_list):
                 # We have our readings, so we can sleep
                 if LOG_LEVEL >= 2:
                     logger.info('All readings received.')
@@ -474,7 +503,7 @@ def main():
                     )
                     break
                 except Exception:
-                    logger.critical('Term siganal received. Exiting...')
+                    logger.critical('Term signal received. Exiting...')
                     keep_reading = False
                     shutdown(
                         rtlamr=rtlamr,
@@ -493,6 +522,13 @@ def main():
             logger.critical('Runtime error: %s', e)
             keep_reading = False
 
+    # Save discovered meters if in monitor mode
+    if monitor_tracker:
+        monitor_tracker.save_discovered_meters()
+        if LOG_LEVEL >= 3:
+            logger.info('Updating config with discovered meters...')
+        monitor_tracker.update_config_with_discovered_meters()
+    
     # Shutdown
     shutdown(
         rtlamr = rtlamr,

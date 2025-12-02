@@ -71,7 +71,7 @@ def load_config(config_path=None):
     else:
         return ('error', 'Config file format not supported.', None)
 
-    # Get values and set defauls
+    # Get values and set defaults
     general, mqtt, custom_parameters = {}, {}, {}
     if 'general' in config and config['general'] is not None:
         general = config['general']
@@ -80,12 +80,13 @@ def load_config(config_path=None):
     if 'custom_parameters' in config and config['custom_parameters'] is not None:
         custom_parameters = config['custom_parameters']
     if 'meters' not in config:
-        return ('error', 'No meters section found in config file.', None)
+        config['meters'] = []
     # General section
     general['sleep_for'] = int(general.get('sleep_for', 0))
     general['verbosity'] = str(general.get('verbosity', 'info'))
     general['device_id'] = str(general.get('device_id', '0'))
     general['rtltcp_host'] = str(general.get('rtltcp_host', '127.0.0.1:1234'))
+    general['monitor_mode'] = bool(general.get('monitor_mode', False))
     # MQTT section
     mqtt['host'] = mqtt.get('host', None)
     if mqtt['host'] is None:
@@ -134,6 +135,10 @@ def load_config(config_path=None):
         'mqtt': mqtt,
         'custom_parameters': custom_parameters,
         'meters': meters,
+        'config_file_path': config_path
     }
+
+    if not meters:
+        config['general']['monitor_mode'] = True
 
     return ('success', 'Config loaded successfully', config)

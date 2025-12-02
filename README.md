@@ -10,8 +10,8 @@
 
 ### Platforms:
 
-[![AMD64](https://img.shields.io/badge/AMD64-Yes-greenb)](https://img.shields.io/badge/AMD64-Yes-greenb)
-[![AARCH64](https://img.shields.io/badge/AARCH64-Yes-greenb)](https://img.shields.io/badge/AARCH64-Yes-greenb)
+[![AMD64](https://img.shields.io/badge/AMD64-Yes-green)](https://img.shields.io/badge/AMD64-Yes-green)
+[![AARCH64](https://img.shields.io/badge/AARCH64-Yes-green)](https://img.shields.io/badge/AARCH64-Yes-green)
 
 RTLAMR2MQTT is a small Python program to read your utility meter such as water, gas and energy using an inexpensive USB RTL-SDR device and send these readings to a MQTT broker to be integrated with Home Assistant or NodeRed.
 
@@ -26,10 +26,11 @@ RTLAMR2MQTT is a small Python program to read your utility meter such as water, 
 - Support multiple meters with one instance
 - Run as an Addon for Home Assistant with Supervisor support and MQTT auto configuration
 - Full sensor customization: `name`, `state_class`, `device_class`, `icon` and `unit_of_measurement`
+- **Monitor mode**: Discover meters in your area by logging all detected meter IDs and readings. Discovered meters are automatically added to the config file on restart with smart defaults (guessing gas, water, or energy based on protocol)
 
 ### Planned features
 
-- Function to find your meter ID based on your meter reading
+- None at this time
 
 ### Changes
 
@@ -148,7 +149,14 @@ USB Device => **005:002**
 
 ### I don't know my meters ID, what can I do?
 
-This is a planned feature...
+Use **Monitor Mode** to discover meters in your area:
+
+1. Enable monitor mode in your configuration by setting `monitor_mode: true` in the `general` section, or simply don't configure any meters
+2. Start the add-on and check the logs
+3. You'll see log entries like: `[MONITOR] Meter ID: 12345678 | Reading: 54321 | Protocol: scm+ | Power: 95`
+4. When you restart the add-on, discovered meters will be automatically added to your config file with smart defaults (up to 25 meters)
+5. Review the auto-generated config and adjust the meter names and settings as needed
+6. Disable monitor mode by setting `monitor_mode: false` once you've identified your meters
 
 ### Thanks to
 
@@ -161,4 +169,4 @@ RTLAMR - https://github.com/bemasher/rtlamr
 RTL_TCP - https://osmocom.org/projects/rtl-sdr/wiki/Rtl-sdr
 
 Icon by:
-[Sound icons created by Plastic Donut - Flaticon]("https://www.flaticon.com/free-icons/sound")
+[Sound icons created by Plastic Donut - Flaticon](https://www.flaticon.com/free-icons/sound)

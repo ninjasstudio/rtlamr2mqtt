@@ -23,6 +23,7 @@ options:
   general:
     sleep_for: 60
     verbosity: info
+    monitor_mode: false
   custom_parameters: {}
   mqtt:
     ha_autodiscovery_topic: homeassistant
@@ -42,6 +43,7 @@ schema:
     verbosity: "list(debug|info|warning|critical|none)?"
     device_id: "match(^[0-9]{3}:[0-9]{3})?"
     rtltcp_host: match(([\w\d\.]+):(\d+))?
+    monitor_mode: bool?
   mqtt:
     host: "str?"
     port: "int?"

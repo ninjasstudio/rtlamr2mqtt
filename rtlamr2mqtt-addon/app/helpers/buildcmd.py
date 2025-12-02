@@ -48,11 +48,14 @@ def build_rtlamr_args(config):
 
     # Build a comma-separated string of meter IDs
     ids = ','.join(list(meters.keys()))
-    filterid_arg = [ f'-filterid={ids}' ]
-
-    # Build a comma-separated string of message types
-    msgtypes = get_comma_separated_str('protocol', meters)
-    msgtype_arg = [ f'-msgtype={msgtypes}' ]
+    if config['general']['monitor_mode']:
+        filterid_arg = []
+        msgtype_arg = [ '-msgtype=all' ]
+    else:
+        filterid_arg = [ f'-filterid={ids}' ]
+        # Build a comma-separated string of message types
+        msgtypes = get_comma_separated_str('protocol', meters)
+        msgtype_arg = [ f'-msgtype={msgtypes}' ]
 
     return list(set(default_args + rtltcp_host + custom_parameters + filterid_arg + msgtype_arg))
 

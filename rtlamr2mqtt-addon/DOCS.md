@@ -75,6 +75,10 @@ general:
   # RTL_TCP host and port to connect. Default, use the internal server
   # If you want to use a remote rtl_tcp server, set the host and port here
   # rtltcp_host: "172.17.0.4:1234"
+  # Monitor mode: Enable to discover meters in your area (logs all meter IDs and readings)
+  # Discovered meters are automatically added to config on next restart with smart defaults (up to 25)
+  # If no meters are configured, monitor mode is automatically enabled
+  # monitor_mode: true
 
 mqtt:
   # Broker host. This is optional.
