@@ -1,12 +1,12 @@
 ### RTLAMR2MQTT
 
-![Docker Pulls](https://img.shields.io/docker/pulls/allangood/rtlamr2mqtt)
-[![GitHub license](https://img.shields.io/github/license/allangood/rtlamr2mqtt)](https://github.com/allangood/rtlamr2mqtt/blob/main/LICENSE)
-[![GitHub stars](https://img.shields.io/github/stars/allangood/rtlamr2mqtt)](https://github.com/allangood/rtlamr2mqtt/stargazers)
-![GitHub contributors](https://img.shields.io/github/contributors/allangood/rtlamr2mqtt)
-[![GitHub issues](https://img.shields.io/github/issues/allangood/rtlamr2mqtt)](https://github.com/allangood/rtlamr2mqtt/issues)
+![Docker Pulls](https://img.shields.io/docker/pulls/ninjasstudio/rtlamr2mqtt)
+[![GitHub license](https://img.shields.io/github/license/ninjasstudio/rtlamr2mqtt)](https://github.com/ninjasstudio/rtlamr2mqtt/blob/main/LICENSE)
+[![GitHub stars](https://img.shields.io/github/stars/ninjasstudio/rtlamr2mqtt)](https://github.com/ninjasstudio/rtlamr2mqtt/stargazers)
+![GitHub contributors](https://img.shields.io/github/contributors/ninjasstudio/rtlamr2mqtt)
+[![GitHub issues](https://img.shields.io/github/issues/ninjasstudio/rtlamr2mqtt)](https://github.com/ninjasstudio/rtlamr2mqtt/issues)
 
-[![Open your Home Assistant instance and show the add add-on repository dialog with a specific repository URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Fallangood%2Frtlamr2mqtt)
+[![Open your Home Assistant instance and show the add add-on repository dialog with a specific repository URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Fninjasstudio%2Frtlamr2mqtt)
 
 ### Platforms:
 
@@ -69,16 +69,16 @@ I am using this one: [NooElec NESDR Mini USB](https://www.amazon.ca/NooElec-NESD
 
 #### Home Assistant Add-On:
 
-[![Open your Home Assistant instance and show the add add-on repository dialog with a specific repository URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Fallangood%2Frtlamr2mqtt)
+[![Open your Home Assistant instance and show the add add-on repository dialog with a specific repository URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Fninjasstudio%2Frtlamr2mqtt)
 
-[![Open your Home Assistant instance and show the dashboard of a Supervisor add-on.](https://my.home-assistant.io/badges/supervisor_addon.svg)](https://my.home-assistant.io/redirect/supervisor_addon/?repository_url=https%3A%2F%2Fgithub.com%2Fallangood%2Frtlamr2mqtt&addon=6713e36e_rtlamr2mqtt)
+[![Open your Home Assistant instance and show the dashboard of a Supervisor add-on.](https://my.home-assistant.io/badges/supervisor_addon.svg)](https://my.home-assistant.io/redirect/supervisor_addon/?repository_url=https%3A%2F%2Fgithub.com%2Fninjasstudio%2Frtlamr2mqtt&addon=6713e36e_rtlamr2mqtt)
 
 Manually:
 
 - Navigate to your Add-Ons (Configuration > Add-ons, Backups, & Supervisor)
 - Click the Add-On Store button
 - Navigate to Repositories (3 dots in the top-right corner > Repositories)
-- Add this repository (https://github.com/allangood/rtlamr2mqtt) and click 'Add'
+- Add this repository (https://github.com/ninjasstudio/rtlamr2mqtt) and click 'Add'
 - You should now see the 'rtlamr' Add-On at the bottom of your Add-On Store. Click to install and configure.
 
 #### Docker or Docker-Compose
@@ -94,7 +94,7 @@ docker run --name rtlamr2mqtt \
   -v /opt/rtlamr2mqtt/rtlamr2mqtt.yaml:/etc/rtlamr2mqtt.yaml \
   --device /dev/bus/usb:/dev/bus/usb \
   --restart unless-stopped \
-  allangood/rtlamr2mqtt
+  ninjasstudio/rtlamr2mqtt
 ```
 
 #### Run with docker-compose
@@ -106,7 +106,7 @@ version: "3"
 services:
   rtlamr:
     container_name: rtlamr2mqtt
-    image: allangood/rtlamr2mqtt
+    image: ninjasstudio/rtlamr2mqtt
     restart: unless-stopped
     devices:
       - /dev/bus/usb
@@ -160,7 +160,7 @@ Use **Monitor Mode** to discover meters in your area:
 
 ### Thanks to
 
-A big thank you to all kind [contributions](https://github.com/allangood/rtlamr2mqtt/graphs/contributors)!
+A big thank you to all kind [contributions](https://github.com/ninjasstudio/rtlamr2mqtt/graphs/contributors)!
 
 ### Credits to:
 

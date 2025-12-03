@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 rtlamr2mqtt - A Home Assistant add-on for RTLAMR
-https://github.com/allangood/rtlamr2mqtt/blob/main/LICENSE
+https://github.com/ninjasstudio/rtlamr2mqtt/blob/main/LICENSE
 
 This add-on uses the code from:
 - https://github.com/bemasher/rtlamr
@@ -435,7 +435,7 @@ def main():
                     power_level = reading['message'].get('PowerLevel', 'N/A')
                     logger.info('[MONITOR] Meter ID: %s | Reading: %s | Protocol: %s | Power: %s',
                                 reading['meter_id'], reading['consumption'], protocol, power_level)
-                    
+                    logger.debug('reading:'+str(reading))
                     # Track this meter for later addition to config
                     if monitor_tracker:
                         monitor_tracker.add_meter(
