@@ -17,7 +17,7 @@ def guess_meter_type(protocol, consumption_rate=None):
     Returns:
         str: 'gas', 'water', or 'energy'
     """
-    protocol = protocol.lower() if protocol else ''
+    protocol = str(protocol).lower() if protocol else ''
     
     # SCM and SCM+ are typically water or gas
     # IDM and NetIDM are typically electric
@@ -124,6 +124,10 @@ class MonitorModeTracker:
             protocol (str): The meter protocol
             consumption (int): Optional consumption value
         """
+
+        # Ensure protocol is a string
+        protocol = str(protocol) if protocol else ''
+        
         if meter_id not in self.discovered_meters:
             if len(self.discovered_meters) < self.max_meters:
                 device_class = guess_meter_type(protocol, consumption)
